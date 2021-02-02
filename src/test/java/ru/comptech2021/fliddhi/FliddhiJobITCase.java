@@ -1,6 +1,9 @@
 package ru.comptech2021.fliddhi;
 
 
+import io.siddhi.core.SiddhiManager;
+import io.siddhi.core.event.Event;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.types.Row;
@@ -26,6 +29,12 @@ public class FliddhiJobITCase {
                 "FROM SourceStream SELECT id INSERT INTO OutputStream",
                 FliddhiStream.of("SourceStream", sourceStream, "id")
         );
+
+/* For FlisshiExecutionOperator testing
+        String sql = "FROM SourceStream SELECT id INSERT INTO OutputStream";
+        SiddhiManager siddhiManager = new SiddhiManager();
+        DataStream<Row> outputStream = sourceStream.transform("", TypeInformation.of(Row.class), new FliddhiExecutionOperator(siddhiManager, sql));
+*/
 
         // стандартный код флинка
         final List<Integer> actual = outputStream
