@@ -40,6 +40,8 @@ public class FliddhiJobITCase {
 
         keyedStream.print();
 
+        env.execute();
+
 //        final DataStream<Row> sourceStream1 = sourceStream.keyBy(new FliddhiKeySelector(
 //                "define stream SourceStream (id string); " +
 //                "FROM SourceStream SELECT id group by id INSERT INTO OutputStream1"));

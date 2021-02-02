@@ -12,7 +12,7 @@ public class FliddhiKeySelector implements KeySelector<Row, String> {
     private String groupByAttribute;
     private String inputStream;
 
-    public FliddhiKeySelector(String sql) {
+    public FliddhiKeySelector(String sql) { //paralelism from inviroment if paralelizm 1 ->..
 
         siddhiApp = SiddhiCompiler.parse(sql);
 
@@ -28,6 +28,7 @@ public class FliddhiKeySelector implements KeySelector<Row, String> {
             throw new UnsupportedOperationException("Group by not found");
         }
     }
+
 
     @Override
     public String getKey(Row row) throws Exception {
