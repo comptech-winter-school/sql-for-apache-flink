@@ -2,7 +2,6 @@ package ru.comptech2021.fliddhi;
 
 
 import io.siddhi.query.api.SiddhiApp;
-import io.siddhi.query.api.execution.query.Query;
 import io.siddhi.query.compiler.SiddhiCompiler;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
@@ -22,35 +21,43 @@ public class FliddhiJobITCase {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         final DataStream<Row> sourceStream = env.fromElements(1, 2, 3, 4, 5).map(Row::of);
 
+        Row row1 = new Row(3);
+        Row row2 = new Row(3);
+        Row row3 = new Row(3);
 
-        SiddhiApp siddhiApp = SiddhiCompiler.parse(
-                "define stream SourceStream (id string); " +
-                        "FROM SourceStream SELECT id group by id INSERT INTO OutputStream1; " +
-                        "FROM SourceStream SELECT id group by id INSERT INTO OutputStream2");
+        row1.setField(0,10);
+        row1.setField(1,11);
+        row1.setField(2,12);
 
-        Query query = (Query) siddhiApp.getExecutionElementList().get(0);
+        row2.setField(0,20);
+        row2.setField(1,21);
+        row2.setField(2,22);
 
-        System.out.println(query.getOutputStream().getId());
+        row3.setField(0,30);
+        row3.setField(1,31);
+        row3.setField(2,32);
 
-        System.out.println(query.getInputStream().getAllStreamIds().get(0));
+        final DataStream<Row> sourceStream1 = env.fromElements(row1, row2, row3);
 
-        KeyedStream<Row, String> keyedStream = sourceStream.keyBy(new FliddhiKeySelector(
-                "define stream SourceStream (id string); " +
-                    "FROM SourceStream SELECT id group by id INSERT INTO OutputStream1"));
+        String sqlJoin = "define stream SourceStream (id string, aa string); " +
+                    "define stream SourceStream1 (id string, bb string); " +
+                    "FROM SourceStream as s1 join SourceStream1 as s2 on s1.id==s2.id SELECT id INSERT INTO OutputStream1";
+
+        String sqlGroupBy = "define stream SourceStream (id1 string, id2 string, id3 string); " +
+                            "FROM SourceStream SELECT id group by id3, id1 INSERT INTO OutputStream1";
+
+        SiddhiApp siddhiApp = SiddhiCompiler.parse(sqlJoin);
+
+
+        KeyedStream<Row, String> keyedStream = sourceStream1.keyBy(
+                FliddhiKeySelectorPlanner.createFliddhiKeySelector(siddhiApp));
 
         keyedStream.print();
 
         env.execute();
 
-//        final DataStream<Row> sourceStream1 = sourceStream.keyBy(new FliddhiKeySelector(
-//                "define stream SourceStream (id string); " +
-//                "FROM SourceStream SELECT id group by id INSERT INTO OutputStream1"));
-//        sourceStream1.print();
 
 
-        //Query query = SiddhiCompiler.parseQuery(siddhiApp);
-
-        //System.out.println(query.getOutputStream().getId());
 
         // апи для сидхи, который нужно реализовать
 //        final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
