@@ -3,6 +3,7 @@ package ru.comptech2021.fliddhi;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.types.Row;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -21,7 +22,22 @@ public interface FliddhiStream {
      * @return implementation of {@link FliddhiStream}.
      */
     static FliddhiStream of(String name, DataStream<Row> dataStream, String... fields) {
-        throw new UnsupportedOperationException("FliddhiStream.of");
+        return new FliddhiStream() {
+            @Override
+            public String name() {
+                return name;
+            }
+
+            @Override
+            public DataStream<Row> dataStream() {
+                return dataStream;
+            }
+
+            @Override
+            public Stream<String> fields() {
+                return Arrays.stream(fields);
+            }
+        };
     }
 
     /**
