@@ -9,17 +9,18 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.types.Row;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 class FirstExecutionEnvironment implements FliddhiExecutionEnvironment {
 
     private final StreamExecutionEnvironment env;
-    private HashMap<String, DataStream<Tuple2<String, Row>>> registeredInputStreams = new HashMap<>();
-    private ArrayList<String> namesOfOutputStreams = new ArrayList<>();
-    private ArrayList<String> namesOfInputStreams = new ArrayList<>();
-    private DataStream<Tuple2<String, Row>> unionStream;
+    private final HashMap<String, DataStream<Tuple2<String, Row>>> registeredInputStreams = new HashMap<>();
+    private final ArrayList<String> namesOfOutputStreams = new ArrayList<>();
+    private final ArrayList<String> namesOfInputStreams = new ArrayList<>();
 
     public ArrayList<String> getNamesOfInputStreams() {
         return namesOfInputStreams;
@@ -35,6 +36,7 @@ class FirstExecutionEnvironment implements FliddhiExecutionEnvironment {
 
     @Override
     public Map<String, DataStream<Row>> siddhiQL(String query) {
+
         new FliddhiExecutionOperator(query);
 
         SiddhiApp siddhiApp = SiddhiCompiler.parse(SiddhiCompiler.updateVariables(query));
@@ -50,16 +52,19 @@ class FirstExecutionEnvironment implements FliddhiExecutionEnvironment {
     }
 
     public void registerInputStream(String nameOfStream, DataStream<Row> nameOfDataStream) {
+
         registeredInputStreams.put(nameOfStream, nameOfDataStream.map(row -> Tuple2.of(nameOfStream,row)));
         namesOfInputStreams.add(nameOfStream);
     }
 
     public DataStream<Tuple2<String, Row>> getUnionStream () {
+
         List<DataStream<Tuple2<String, Row>>> streams = (List<DataStream<Tuple2<String, Row>>>) registeredInputStreams.values();
-        unionStream = streams.get(0);
+        DataStream<Tuple2<String, Row>> unionStream = streams.get(0);
         for(int i = 1; i<streams.size(); i++){
             unionStream = unionStream.union(streams.get(i));
         }
+
         return unionStream;
     }
 
