@@ -3,6 +3,8 @@ package ru.comptech2021.fliddhi;
 import io.siddhi.query.api.SiddhiApp;
 import io.siddhi.query.api.execution.query.Query;
 import io.siddhi.query.compiler.SiddhiCompiler;
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -59,5 +61,20 @@ class FirstExecutionEnvironment implements FliddhiExecutionEnvironment {
             unionStream = unionStream.union(streams.get(i));
         }
         return unionStream;
+    }
+
+    public Map<String,DataStream<Row>> outputRecordRouting(
+            DataStream<Tuple2<String, Row>> outputStreams){
+
+        Map<String,DataStream<Row>> outputMap = new HashMap<>();
+        for (int i = 0; i < namesOfOutputStreams.size(); i++) {
+            int finalI = i;
+            outputMap.put(namesOfOutputStreams.get(i),outputStreams.filter(
+                    (FilterFunction<Tuple2<String, Row>>) stringRowTuple2 ->
+                            stringRowTuple2.f0.equals(namesOfOutputStreams.get(finalI))).
+                    map((MapFunction<Tuple2<String, Row>, Row>) stringRowTuple2 -> stringRowTuple2.f1));
+        }
+
+        return outputMap;
     }
 }
