@@ -8,7 +8,7 @@ public abstract class FliddhiKeySelector implements KeySelector<Row, String> {
 
     protected SiddhiApp siddhiApp;
 
-    public FliddhiKeySelector(SiddhiApp siddhiApp) { //paralelism from inviroment if paralelizm 1 ->..
+    public FliddhiKeySelector(SiddhiApp siddhiApp) {
 
         this.siddhiApp = siddhiApp;
 

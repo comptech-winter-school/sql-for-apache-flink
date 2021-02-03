@@ -6,12 +6,13 @@ import org.apache.flink.types.Row;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FliddhiGroupByKeySelector extends FliddhiKeySelector {
 
     //private String groupByAttribute;
-    private List<String> groupByAttributes = new ArrayList<>();
-    private String inputStream;
+    private final List<String> groupByAttributes = new ArrayList<>();
+    private final String inputStream;
 
     public FliddhiGroupByKeySelector(SiddhiApp siddhiApp) {
         super(siddhiApp);
@@ -35,11 +36,10 @@ public class FliddhiGroupByKeySelector extends FliddhiKeySelector {
         StringBuilder stringBuilder = new StringBuilder(inputStream);
         for(String groupByAttribute : groupByAttributes) {
             stringBuilder.append(":");
-            stringBuilder.append(row.getField(
+            stringBuilder.append(Objects.requireNonNull(row.getField(
                     siddhiApp.getStreamDefinitionMap().get(inputStream).
-                            getAttributePosition(groupByAttribute)).toString());
+                            getAttributePosition(groupByAttribute))).toString());
         }
-
 
         System.out.println(stringBuilder.toString());
 

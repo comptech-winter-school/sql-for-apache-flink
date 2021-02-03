@@ -37,14 +37,19 @@ public class FliddhiJobITCase {
         row3.setField(1,31);
         row3.setField(2,32);
 
+
         final DataStream<Row> sourceStream1 = env.fromElements(row1, row2, row3);
 
-        String sqlJoin = "define stream SourceStream (id string, aa string); " +
-                    "define stream SourceStream1 (id string, bb string); " +
-                    "FROM SourceStream as s1 join SourceStream1 as s2 on s1.id==s2.id SELECT id INSERT INTO OutputStream1";
+        String sqlJoin = "define stream SourceStream1 (id0 string, id1 string, id2 string); " +
+                        "define stream SourceStream2 (id0 string, id1 string, id2 string); " +
+                        "FROM SourceStream1 as s1 join SourceStream2 as s2 on s1.id2==s2.id2 " +
+                        "SELECT id INSERT INTO OutputStream1";
 
-        String sqlGroupBy = "define stream SourceStream (id1 string, id2 string, id3 string); " +
-                            "FROM SourceStream SELECT id group by id3, id1 INSERT INTO OutputStream1";
+        String sqlGroupBy = "define stream SourceStream1 (id0 string, id1 string, id2 string); " +
+                            "FROM SourceStream1 SELECT id1 group by id1 INSERT INTO OutputStream1";
+
+        String sqlPlain = "define stream SourceStream1 (id0 string, id1 string, id2 string); " +
+                        "FROM SourceStream1 SELECT id1 INSERT INTO OutputStream1";
 
         SiddhiApp siddhiApp = SiddhiCompiler.parse(sqlJoin);
 
