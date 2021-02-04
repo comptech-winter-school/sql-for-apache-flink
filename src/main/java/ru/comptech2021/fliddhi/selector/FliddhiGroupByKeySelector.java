@@ -4,6 +4,7 @@ import io.siddhi.query.api.SiddhiApp;
 import io.siddhi.query.api.execution.query.Query;
 import io.siddhi.query.api.expression.Variable;
 import org.apache.flink.types.Row;
+import ru.comptech2021.fliddhi.FlinkRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +20,18 @@ public class FliddhiGroupByKeySelector extends FliddhiKeySelector {
         System.out.println("FliddhiGroupByKeySelector ctor");
 
         Query query = (Query) siddhiApp.getExecutionElementList().get(0);
+
         List<Variable> groupByList = query.getSelector().getGroupByList();
-        for (int i = 0; i < groupByList.size(); i++) {
+        for (int i = 0; i < groupByList.size(); i++)
             groupByAttributes.add(i, groupByList.get(i).getAttributeName());
-        }
 
         //groupByAttribute = query.getSelector().getGroupByList().get(0).getAttributeName();
         nameOfInputStream = query.getInputStream().getAllStreamIds().get(0);
     }
 
     @Override
-    public String getKey(Row row) throws Exception {
+    public String getKey(FlinkRecord flinkRecord) throws Exception {
+        Row row = flinkRecord.row;
 
         StringBuilder stringBuilder = new StringBuilder(nameOfInputStream);
         for (String groupByAttribute : groupByAttributes) {

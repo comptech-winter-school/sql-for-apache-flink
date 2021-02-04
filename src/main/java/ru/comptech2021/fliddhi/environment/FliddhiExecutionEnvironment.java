@@ -1,4 +1,4 @@
-package ru.comptech2021.fliddhi;
+package ru.comptech2021.fliddhi.environment;
 
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;

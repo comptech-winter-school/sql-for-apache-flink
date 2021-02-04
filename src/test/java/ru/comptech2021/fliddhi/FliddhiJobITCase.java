@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.types.Row;
 import org.junit.Test;
+import ru.comptech2021.fliddhi.environment.FliddhiExecutionEnvironment;
 
 import java.util.List;
 import java.util.Map;

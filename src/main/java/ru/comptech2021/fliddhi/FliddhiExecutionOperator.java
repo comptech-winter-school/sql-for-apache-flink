@@ -14,10 +14,10 @@ import scala.Tuple2;
 
 import java.util.*;
 
-public class FliddhiExecutionOperator extends AbstractStreamOperator<Tuple2<String, Row>> implements OneInputStreamOperator<Tuple2<String, Row>, Tuple2<String, Row>> {
+public class FliddhiExecutionOperator extends AbstractStreamOperator<FlinkRecord> implements OneInputStreamOperator<FlinkRecord, FlinkRecord> {
 
     private transient SiddhiManager siddhiManager; //возможно что-то здесь тосит удалить
-    private transient SiddhiApp siddhiApp;
+    private SiddhiApp siddhiApp;
     private transient SiddhiAppRuntime siddhiAppRuntime;
 
     private Collection<String> inputStreamsName;
@@ -50,15 +50,15 @@ public class FliddhiExecutionOperator extends AbstractStreamOperator<Tuple2<Stri
     }
 
     @Override
-    public void processElement(StreamRecord<Tuple2<String, Row>> streamRecord) throws Exception {
-        String flinkStreamName = streamRecord.getValue()._1;
-        Row row = streamRecord.getValue()._2;
+    public void processElement(StreamRecord<FlinkRecord> streamRecord) throws Exception {
+        String flinkStreamName = streamRecord.getValue().getStreamName();
+        Row row = streamRecord.getValue().getRow();
         siddhiInputHandlers.get(flinkStreamName).send(row2Event(row));
     }
 
     private void collectElements(String streamName, Event[] events) {
         for (Event event : events) {
-            StreamRecord<Tuple2<String, Row>> record = new StreamRecord<>(new Tuple2<>(streamName, event2Row(event)));
+            StreamRecord<FlinkRecord> record = new StreamRecord<>(new FlinkRecord(streamName, event2Row(event)));
             this.output.collect(record);
         }
     }

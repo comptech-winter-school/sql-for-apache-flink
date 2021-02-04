@@ -3,8 +3,9 @@ package ru.comptech2021.fliddhi.selector;
 import io.siddhi.query.api.SiddhiApp;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.types.Row;
+import ru.comptech2021.fliddhi.FlinkRecord;
 
-public abstract class FliddhiKeySelector implements KeySelector<Row, String> {
+public abstract class FliddhiKeySelector implements KeySelector<FlinkRecord, String> {
 
     protected SiddhiApp siddhiApp;
 

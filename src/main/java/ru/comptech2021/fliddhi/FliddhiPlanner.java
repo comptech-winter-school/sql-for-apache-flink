@@ -8,9 +8,9 @@ import ru.comptech2021.fliddhi.selector.FliddhiJoinKeySelector;
 import ru.comptech2021.fliddhi.selector.FliddhiKeySelector;
 import ru.comptech2021.fliddhi.selector.FliddhiPlainKeySelector;
 
-public abstract class FliddhiPlanner {
+public class FliddhiPlanner {
 
-    static FliddhiKeySelector createFliddhiKeySelector(SiddhiApp siddhiApp) {
+     public FliddhiKeySelector createFliddhiKeySelector(int parallelism, SiddhiApp siddhiApp) {
         Query query = (Query) siddhiApp.getExecutionElementList().get(0);
 
         System.out.println("FliddhiKeySelectorPlanner");
@@ -23,6 +23,5 @@ public abstract class FliddhiPlanner {
         }
         //todo if parallelism = 1:
         return new FliddhiPlainKeySelector(siddhiApp);
-
     }
 }
