@@ -10,6 +10,7 @@ import org.apache.flink.types.Row;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -25,12 +26,11 @@ public class FliddhiJobITCase {
 
         // апи для сидхи, который нужно реализовать
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
-        final FliddhiStream outputStream = fEnv.siddhiQL(
-                "FROM SourceStream SELECT id INSERT INTO OutputStream",
-                FliddhiStream.of("SourceStream", sourceStream, "id")
-        );
+        fEnv.registerInputStream("inputStream1", sourceStream);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(
+                "FROM SourceStream SELECT id INSERT INTO OutputStream");
 
-/* For FlisshiExecutionOperator testing
+/* For FliddhiExecutionOperator testing
         String sql = "FROM SourceStream SELECT id INSERT INTO OutputStream";
         SiddhiManager siddhiManager = new SiddhiManager();
         DataStream<Row> outputStream = sourceStream.transform("", TypeInformation.of(Row.class), new FliddhiExecutionOperator(siddhiManager, sql));
@@ -38,7 +38,7 @@ public class FliddhiJobITCase {
 
         // стандартный код флинка
         final List<Integer> actual = outputStream
-                .dataStream()
+                .get("OutputStream")
                 .map(row -> (Integer) row.getField(0))
                 .executeAndCollect(5);
         assertThat(actual, containsInAnyOrder(1, 2, 3, 4, 5));
