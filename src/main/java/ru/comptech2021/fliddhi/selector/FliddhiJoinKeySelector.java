@@ -6,6 +6,7 @@ import io.siddhi.query.api.execution.query.input.stream.JoinInputStream;
 import io.siddhi.query.api.expression.Variable;
 import io.siddhi.query.api.expression.condition.Compare;
 import org.apache.flink.types.Row;
+import ru.comptech2021.fliddhi.FlinkRecord;
 
 import java.util.Objects;
 
@@ -33,7 +34,8 @@ public class FliddhiJoinKeySelector extends FliddhiKeySelector {
     }
 
     @Override
-    public String getKey(Row row) throws Exception {
+    public String getKey(FlinkRecord record) throws Exception {
+        Row row = record.getRow();
         System.out.println(inputStream + ":" +
                 Objects.requireNonNull(row.getField(
                         siddhiApp.getStreamDefinitionMap()

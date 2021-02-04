@@ -10,19 +10,18 @@ import org.apache.flink.streaming.api.operators.AbstractStreamOperator;
 import org.apache.flink.streaming.api.operators.OneInputStreamOperator;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.types.Row;
-import scala.Tuple2;
 
 import java.util.*;
 
 public class FliddhiExecutionOperator extends AbstractStreamOperator<FlinkRecord> implements OneInputStreamOperator<FlinkRecord, FlinkRecord> {
 
-    private transient SiddhiManager siddhiManager; //возможно что-то здесь тосит удалить
+    private transient SiddhiManager siddhiManager;
     private SiddhiApp siddhiApp;
     private transient SiddhiAppRuntime siddhiAppRuntime;
 
     private Collection<String> inputStreamsName;
     private Collection<String> outputStreamsName;
-    private transient HashMap<String, InputHandler> siddhiInputHandlers = new HashMap<>(); // HashMap<SiddhiInputStreamName, InputHandler>
+    private transient HashMap<String, InputHandler> siddhiInputHandlers = new HashMap<>(); // _1: siddhiInputStreamName, _2: InputHandler
 
     public FliddhiExecutionOperator(SiddhiApp siddhiApp, Collection<String> inputStreamsName, Collection<String> outputStreamsName) {
         this.siddhiApp = siddhiApp;

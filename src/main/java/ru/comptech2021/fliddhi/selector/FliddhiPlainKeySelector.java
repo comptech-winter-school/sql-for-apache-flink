@@ -3,6 +3,7 @@ package ru.comptech2021.fliddhi.selector;
 import io.siddhi.query.api.SiddhiApp;
 import io.siddhi.query.api.execution.query.Query;
 import org.apache.flink.types.Row;
+import ru.comptech2021.fliddhi.FlinkRecord;
 
 public class FliddhiPlainKeySelector extends FliddhiKeySelector {
 
@@ -19,5 +20,5 @@ public class FliddhiPlainKeySelector extends FliddhiKeySelector {
     }
 
     @Override
-    public String getKey(Row row) throws Exception { return inputStream; }
+    public String getKey(FlinkRecord record) throws Exception { return inputStream; }
 }

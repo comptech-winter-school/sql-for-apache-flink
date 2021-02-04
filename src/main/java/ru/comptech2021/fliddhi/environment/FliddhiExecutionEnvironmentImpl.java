@@ -44,7 +44,7 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
         FliddhiExecutionOperator operator = new FliddhiExecutionOperator(siddhiApp, namesOfInputStreams, namesOfOutputStreams);
 
         DataStream<FlinkRecord> streams = unionStreams();
-        DataStream<FlinkRecord> resultStream =  streams.keyBy(keySelector).transform("Siddhi Query", TypeInformation.of(FlinkRecord.class), operator);
+        DataStream<FlinkRecord> resultStream = streams.keyBy(keySelector).transform("Siddhi Query", TypeInformation.of(FlinkRecord.class), operator);
 
         return outputRecordRouting(resultStream);
     }
@@ -76,9 +76,7 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
         return namesOfInputStreams;
     }
 
-    public ArrayList<String> getNamesOfOutputStreams() {
-        return namesOfOutputStreams;
-    }
+    public ArrayList<String> getNamesOfOutputStreams() { return namesOfOutputStreams; }
 
     public HashMap<String, DataStream<FlinkRecord>> getRegisteredInputStreams() {
         return registeredInputStreams;

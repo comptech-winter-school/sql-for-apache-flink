@@ -31,7 +31,7 @@ public class FliddhiGroupByKeySelector extends FliddhiKeySelector {
 
     @Override
     public String getKey(FlinkRecord flinkRecord) throws Exception {
-        Row row = flinkRecord.row;
+        Row row = flinkRecord.getRow();
 
         StringBuilder stringBuilder = new StringBuilder(nameOfInputStream);
         for (String groupByAttribute : groupByAttributes) {
