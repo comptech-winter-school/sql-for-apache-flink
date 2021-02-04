@@ -39,8 +39,7 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
         SiddhiApp siddhiApp = new SiddhiApp(query);
         namesOfOutputStreams.add(((Query) siddhiApp.getExecutionElementList().get(0)).getOutputStream().getId());
 
-        FliddhiPlanner planner = new FliddhiPlanner();
-        FliddhiKeySelector keySelector = planner.createFliddhiKeySelector(parallelism, siddhiApp);
+        FliddhiKeySelector keySelector = FliddhiPlanner.createFliddhiKeySelector(parallelism, siddhiApp);
         FliddhiExecutionOperator operator = new FliddhiExecutionOperator(siddhiApp, namesOfInputStreams, namesOfOutputStreams);
 
         DataStream<FlinkRecord> streams = unionStreams();
