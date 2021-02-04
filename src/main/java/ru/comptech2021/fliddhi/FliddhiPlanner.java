@@ -15,13 +15,15 @@ public abstract class FliddhiPlanner {
 
         System.out.println("FliddhiKeySelectorPlanner");
 
+        if(parallelism==1) {
+            return new FliddhiPlainKeySelector(siddhiApp);
+        }
         if (!query.getSelector().getGroupByList().isEmpty()) {
             return new FliddhiGroupByKeySelector(siddhiApp);
         }
         if (query.getInputStream() instanceof JoinInputStream) {
             return new FliddhiJoinKeySelector(siddhiApp);
         }
-        //todo if parallelism = 1:
-        return new FliddhiPlainKeySelector(siddhiApp);
+        throw new UnsupportedOperationException();
     }
 }

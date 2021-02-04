@@ -10,11 +10,13 @@ import ru.comptech2021.fliddhi.FlinkRecord;
 
 import java.util.Objects;
 
-//не очень уверен в этой реализации))))
 public class FliddhiJoinKeySelector extends FliddhiKeySelector {
 
-    private final String onAttributeName;
-    private final String inputStream;
+    private final String leftAttributeName;
+    private final String rightAttributeName;
+    private final String leftInputStream;
+    private final String rightInputStream;
+    private final JoinInputStream.Type joinType;
 
     public FliddhiJoinKeySelector(SiddhiApp siddhiApp) {
         super(siddhiApp);
@@ -22,13 +24,16 @@ public class FliddhiJoinKeySelector extends FliddhiKeySelector {
         Query query = (Query) siddhiApp.getExecutionElementList().get(0);
         JoinInputStream joinInputStream = (JoinInputStream) query.getInputStream();
 
-        JoinInputStream.Type joinType = joinInputStream.getType();
+        joinType = joinInputStream.getType();
 
-        inputStream = joinInputStream.getLeftInputStream().getAllStreamIds().get(0);
+        leftInputStream = joinInputStream.getLeftInputStream().getAllStreamIds().get(0);
+        rightInputStream = joinInputStream.getRightInputStream().getAllStreamIds().get(0);
 
         Compare onCompare = (Compare) joinInputStream.getOnCompare();
         Variable leftExpression = (Variable) onCompare.getLeftExpression();
-        onAttributeName = leftExpression.getAttributeName();
+        Variable rightExpression = (Variable) onCompare.getRightExpression();
+        leftAttributeName = leftExpression.getAttributeName();
+        rightAttributeName = rightExpression.getAttributeName();
 
         System.out.println("FliddhiJoinKeySelector ctor");
     }
@@ -36,18 +41,36 @@ public class FliddhiJoinKeySelector extends FliddhiKeySelector {
     @Override
     public String getKey(FlinkRecord record) throws Exception {
         Row row = record.getRow();
-        System.out.println(inputStream + ":" +
-                Objects.requireNonNull(row.getField(
-                        siddhiApp.getStreamDefinitionMap()
-                                .get(inputStream)
-                                .getAttributePosition(onAttributeName)
-                )).toString());
 
-        return inputStream + ":" +
-                Objects.requireNonNull(row.getField(
-                        siddhiApp.getStreamDefinitionMap()
-                                .get(inputStream)
-                                .getAttributePosition(onAttributeName)
-                )).toString();
+        switch (joinType) {
+            case JOIN: // join = inner join
+            case INNER_JOIN:
+                System.out.println(leftInputStream + ":" + rightInputStream + ":" +
+                        Objects.requireNonNull(row.getField(
+                                siddhiApp.getStreamDefinitionMap()
+                                        .get(leftInputStream)
+                                        .getAttributePosition(leftAttributeName)
+                        )).toString() + ":" +
+                        Objects.requireNonNull(row.getField(
+                                siddhiApp.getStreamDefinitionMap()
+                                        .get(rightInputStream)
+                                        .getAttributePosition(rightAttributeName)
+                        )).toString());
+
+
+                return leftInputStream + ":" + rightInputStream + ":" +
+                        Objects.requireNonNull(row.getField(
+                                siddhiApp.getStreamDefinitionMap()
+                                        .get(leftInputStream)
+                                        .getAttributePosition(leftAttributeName)
+                        )).toString() +
+                        Objects.requireNonNull(row.getField(
+                                siddhiApp.getStreamDefinitionMap()
+                                        .get(rightInputStream)
+                                        .getAttributePosition(rightAttributeName)
+                        )).toString();
+
+            default: return row.getField(0).toString(); //заглушка
+        }
     }
 }
