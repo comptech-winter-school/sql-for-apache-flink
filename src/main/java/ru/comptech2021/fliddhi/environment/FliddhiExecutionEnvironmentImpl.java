@@ -2,6 +2,7 @@ package ru.comptech2021.fliddhi.environment;
 
 import io.siddhi.query.api.SiddhiApp;
 import io.siddhi.query.api.execution.query.Query;
+import io.siddhi.query.compiler.SiddhiCompiler;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -23,7 +24,7 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
 
     private final ArrayList<String> namesOfInputStreams = new ArrayList<>();
     private final ArrayList<String> namesOfOutputStreams = new ArrayList<>();
-    private final HashMap<String, DataStream<FlinkRecord>> registeredInputStreams = new HashMap<>();
+    private  HashMap<String, DataStream<FlinkRecord>> registeredInputStreams = new HashMap<>();
 
     public FliddhiExecutionEnvironmentImpl(StreamExecutionEnvironment env) {
         this.env = env;
@@ -37,6 +38,8 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
     @Override
     public Map<String, DataStream<Row>> siddhiQL(int parallelism, String query) {
         SiddhiApp siddhiApp = new SiddhiApp(query);
+        siddhiApp = SiddhiCompiler.parse(SiddhiCompiler.updateVariables(query));
+
         namesOfOutputStreams.add(((Query) siddhiApp.getExecutionElementList().get(0)).getOutputStream().getId());
 
         FliddhiKeySelector keySelector = FliddhiPlanner.createFliddhiKeySelector(parallelism, siddhiApp);
@@ -48,7 +51,7 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
         return outputRecordRouting(resultStream);
     }
 
-    public DataStream<FlinkRecord> unionStreams() {
+    private DataStream<FlinkRecord> unionStreams() {
         List<DataStream<FlinkRecord>> streams = new ArrayList<>(registeredInputStreams.values());
         DataStream<FlinkRecord> unionStream = streams.get(0);
         for (int i = 1; i < streams.size(); i++)
@@ -56,14 +59,16 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
         return unionStream;
     }
 
-    public Map<String, DataStream<Row>> outputRecordRouting(DataStream<FlinkRecord> outputStreams) {
+    private Map<String, DataStream<Row>> outputRecordRouting(DataStream<FlinkRecord> outputStreams) {
         Map<String, DataStream<Row>> outputMap = new HashMap<>();
         for (int i = 0; i < namesOfOutputStreams.size(); i++) {
             int finalI = i;
             outputMap.put(
                     namesOfOutputStreams.get(i),
                     outputStreams
-                            .filter(record -> record.getStreamName().equals(namesOfOutputStreams.get(finalI)))
+                            .filter(
+                                    record -> record.getStreamName()
+                                    .equals(namesOfOutputStreams.get(finalI)))
                             .map(FlinkRecord::getRow));
         }
         return outputMap;
