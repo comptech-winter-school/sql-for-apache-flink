@@ -21,7 +21,7 @@ public class FliddhiExecutionOperator extends AbstractStreamOperator<FlinkRecord
 
     private Collection<String> inputStreamsName;
     private Collection<String> outputStreamsName;
-    private transient HashMap<String, InputHandler> siddhiInputHandlers = new HashMap<>(); // _1: siddhiInputStreamName, _2: InputHandler
+    private transient HashMap<String, InputHandler> siddhiInputHandlers; // _1: siddhiInputStreamName, _2: InputHandler
 
     public FliddhiExecutionOperator(SiddhiApp siddhiApp, Collection<String> inputStreamsName, Collection<String> outputStreamsName) {
         this.siddhiApp = siddhiApp;
@@ -36,6 +36,7 @@ public class FliddhiExecutionOperator extends AbstractStreamOperator<FlinkRecord
         this.siddhiManager = new SiddhiManager();
         this.siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(this.siddhiApp);
 
+        siddhiInputHandlers = new HashMap<>();
         inputStreamsName.forEach(name -> siddhiInputHandlers.put(name, siddhiAppRuntime.getInputHandler(name)));
         outputStreamsName.forEach(name ->
                 siddhiAppRuntime.addCallback(name, new StreamCallback() {

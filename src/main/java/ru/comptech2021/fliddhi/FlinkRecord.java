@@ -2,7 +2,9 @@ package ru.comptech2021.fliddhi;
 
 import org.apache.flink.types.Row;
 
-public class FlinkRecord {
+import java.io.Serializable;
+
+public class FlinkRecord implements Serializable {
     // todo timestamp?
 
     private String streamName;

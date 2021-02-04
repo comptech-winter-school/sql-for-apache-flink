@@ -37,8 +37,7 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
 
     @Override
     public Map<String, DataStream<Row>> siddhiQL(int parallelism, String query) {
-        SiddhiApp siddhiApp = new SiddhiApp(query);
-        siddhiApp = SiddhiCompiler.parse(SiddhiCompiler.updateVariables(query));
+        SiddhiApp siddhiApp = SiddhiCompiler.parse(SiddhiCompiler.updateVariables(query));
 
         namesOfOutputStreams.add(((Query) siddhiApp.getExecutionElementList().get(0)).getOutputStream().getId());
 
@@ -63,12 +62,11 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
         Map<String, DataStream<Row>> outputMap = new HashMap<>();
         for (int i = 0; i < namesOfOutputStreams.size(); i++) {
             int finalI = i;
+            ArrayList<String> outputNames = this.namesOfOutputStreams;
             outputMap.put(
-                    namesOfOutputStreams.get(i),
+                    outputNames.get(i),
                     outputStreams
-                            .filter(
-                                    record -> record.getStreamName()
-                                    .equals(namesOfOutputStreams.get(finalI)))
+                            .filter(record -> record.getStreamName().equals(outputNames.get(finalI)))
                             .map(FlinkRecord::getRow));
         }
         return outputMap;
