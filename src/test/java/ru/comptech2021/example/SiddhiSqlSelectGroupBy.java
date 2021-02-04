@@ -27,7 +27,7 @@ public class SiddhiSqlSelectGroupBy {
 
                /* "define stream StockStream (name string, department float, salary long); " +
                 "" + // и в третий раз: "зачем это?"
-                "@info(name = 'query1') " +  // что это?
+                "@info(name = 'query1') " +
                 "from StockStream " +
                 "" +
                 "select  department, min (salary) as minsalary " +
@@ -35,11 +35,20 @@ public class SiddhiSqlSelectGroupBy {
                 "insert into OutputStream;"; */
 
 
-                "define stream StockStream (name string, department float, salary long); " +
+               /* "define stream StockStream (name string, department float, salary long); " +
                 "" + // и в третий раз: "зачем это?"
-                "@info(name = 'query1') " +  // что это?
+                "@info(name = 'query1') " +
                 "from StockStream " +
                 "select department, name, salary " +
+                "insert into OutputStream;";*/
+
+                "define stream StockStream (name string, department float, salary long); " +
+                "" +
+                "@info(name = 'query1') " +
+                "from StockStream#window.lengthBatch(5) " +
+                "" +
+                "select  department, min (salary) as minSalary " +
+                "group by department "+
                 "insert into OutputStream;";
 
         //Generate runtime
