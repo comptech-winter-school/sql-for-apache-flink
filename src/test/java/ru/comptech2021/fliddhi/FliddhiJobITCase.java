@@ -65,6 +65,45 @@ public class FliddhiJobITCase {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         final DataStream<Row> sourceStream = env.fromElements(elements).map(Row::of);
 
+
+        Row row1 = new Row(3);
+        Row row2 = new Row(3);
+        Row row3 = new Row(3);
+        Row row4 = new Row(3);
+        Row row5 = new Row(3);
+        Row row6 = new Row(3);
+        Row row7 = new Row(3);
+
+        row1.setField(0, "IBM");
+        row1.setField(1, 700f);
+        row1.setField(2, 100L);
+
+        row2.setField(0, "IBM");
+        row2.setField(1, 700f);
+        row2.setField(2, 100L);
+
+        row3.setField(0, "WCO2");
+        row3.setField(1, 60.5f);
+        row3.setField(2, 20L);
+
+        row4.setField(0, "GOOD");
+        row4.setField(1, 50f);
+        row4.setField(2, 30L);
+
+        row5.setField(0, "IBM");
+        row5.setField(1, 76.6f);
+        row5.setField(2, 400L);
+
+        row6.setField(0, "WCO2");
+        row6.setField(1, 45.6f);
+        row6.setField(2, 50L);
+
+        row7.setField(0, "IBM");
+        row7.setField(1, 50f);
+        row7.setField(2, 30L);
+
+        final DataStream<Row> sourceStream1 = env.fromElements(row1, row2, row3, row4, row5, row6, row7);
+
         String query = "" +
                 "define stream SourceStream (symbol string, price float, volume long); " +
                 "" +
@@ -73,8 +112,8 @@ public class FliddhiJobITCase {
                 "insert into OutputStream;";
 
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
-        fEnv.registerInputStream("SourceStream", sourceStream);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(1, query);
+        fEnv.registerInputStream("SourceStream", sourceStream1);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, query);
 
         // стандартный код флинка
         final DataStreamSink<Row> actual = outputStream

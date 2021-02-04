@@ -25,7 +25,6 @@ public class FliddhiGroupByKeySelector extends FliddhiKeySelector {
         for (int i = 0; i < groupByList.size(); i++)
             groupByAttributes.add(i, groupByList.get(i).getAttributeName());
 
-        //groupByAttribute = query.getSelector().getGroupByList().get(0).getAttributeName();
         nameOfInputStream = query.getInputStream().getAllStreamIds().get(0);
     }
 
@@ -41,25 +40,7 @@ public class FliddhiGroupByKeySelector extends FliddhiKeySelector {
                             getAttributePosition(groupByAttribute))).toString());
         }
 
-        System.out.println(stringBuilder.toString());
+        //System.out.println(stringBuilder.toString());
         return stringBuilder.toString();
-
-
-/*
-        System.out.println(nameOfInputStream + ":" +
-                row.getField(
-                        siddhiApp.getStreamDefinitionMap()
-                                .get(nameOfInputStream)
-                                .getAttributePosition(groupByAttribute)
-                ).toString());
-
-        return nameOfInputStream + ":" +
-                row.getField(
-                siddhiApp.getStreamDefinitionMap()
-                        .get(nameOfInputStream)
-                        .getAttributePosition(groupByAttribute)
-                ).toString();
-
- */
     }
 }
