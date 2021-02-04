@@ -23,7 +23,7 @@ public class SiddhiFilterExample {
                 "" +
                 "@info(name = 'query1') " +
                 "from StockStream[volume < 150] " +
-                "select symbol, price " +
+                "select symbol, sum(price) as sumPrice group by symbol " +
                 "insert into OutputStream;";
 
         //Generate runtime
@@ -47,10 +47,12 @@ public class SiddhiFilterExample {
 
         //Sending events to Siddhi
         inputHandler.send(new Object[]{"IBM", 700f, 100L});
+        inputHandler.send(new Object[]{"IBM", 700f, 100L});
         inputHandler.send(new Object[]{"WSO2", 60.5f, 200L});
         inputHandler.send(new Object[]{"GOOG", 50f, 30L});
         inputHandler.send(new Object[]{"IBM", 76.6f, 400L});
         inputHandler.send(new Object[]{"WSO2", 45.6f, 50L});
+        inputHandler.send(new Object[]{"GOOG", 50f, 30L});
         Thread.sleep(500);
 
         //Shutdown runtime

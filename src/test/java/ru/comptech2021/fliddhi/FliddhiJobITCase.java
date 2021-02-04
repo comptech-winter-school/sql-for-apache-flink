@@ -27,7 +27,7 @@ public class FliddhiJobITCase {
         // апи для сидхи, который нужно реализовать
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
         fEnv.registerInputStream("inputStream1", sourceStream);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(1,
                 "FROM SourceStream SELECT id INSERT INTO OutputStream");
 
 /* For FliddhiExecutionOperator testing

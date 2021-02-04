@@ -51,8 +51,8 @@ public class FliddhiExecutionOperator extends AbstractStreamOperator<Tuple2<Stri
 
     @Override
     public void processElement(StreamRecord<Tuple2<String, Row>> streamRecord) throws Exception {
-        Row row = streamRecord.getValue()._2;
         String flinkStreamName = streamRecord.getValue()._1;
+        Row row = streamRecord.getValue()._2;
         siddhiInputHandlers.get(flinkStreamName).send(row2Event(row));
     }
 
