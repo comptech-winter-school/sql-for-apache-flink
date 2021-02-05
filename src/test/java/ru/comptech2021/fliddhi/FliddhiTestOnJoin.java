@@ -111,7 +111,7 @@ public class FliddhiTestOnJoin {
                 .get("OutputStream")
                 //.map(row -> (Integer) row.getField(0))
                 .executeAndCollect(1);
-        assertThat(actual, contains(Row.of("1", "Hello", 50f)));
+        assertThat(actual, contains(Row.of("1", "Hello", 50f),Row.of("2", "Bye!", 40f)));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class FliddhiTestOnJoin {
         final DataStream<Row> twitterStream = env.fromElements(new Object[]{"1", "Hello"}, new Object[]{"3", "Bye!"}).map(Row::of);
 
         // апи для сидхи, который нужно реализовать
-        String queryInnerJoin = ""+
+        String queryOuterJoin = ""+
                 "define stream StockStream (symbol string, price float, volume long); " +
                 "define stream TwitterStream (companyID string, tweet string); " +
                 " " +
@@ -138,7 +138,7 @@ public class FliddhiTestOnJoin {
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
         fEnv.registerInputStream("StockStream", sourceStream);
         fEnv.registerInputStream("TwitterStream", twitterStream);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, queryInnerJoin);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, queryOuterJoin);
         // стандартный код флинка
         final List<Row> actual = outputStream
                 .get("OutputStream")
@@ -157,7 +157,7 @@ public class FliddhiTestOnJoin {
         final DataStream<Row> twitterStream = env.fromElements(new Object[]{"1", "Hello"}, new Object[]{"3", "Bye!"}).map(Row::of);
 
         // апи для сидхи, который нужно реализовать
-        String queryInnerJoin = ""+
+        String queryOuterJoin = ""+
                 "define stream StockStream (symbol string, price float, volume long); " +
                 "define stream TwitterStream (companyID string, tweet string); " +
                 " " +
@@ -172,13 +172,44 @@ public class FliddhiTestOnJoin {
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
         fEnv.registerInputStream("StockStream", sourceStream);
         fEnv.registerInputStream("TwitterStream", twitterStream);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, queryInnerJoin);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, queryOuterJoin);
         // стандартный код флинка
         final List<Row> actual = outputStream
                 .get("OutputStream")
                 //.map(row -> (Integer) row.getField(0))
                 .executeAndCollect(1);
         assertThat(actual, containsInAnyOrder(Row.of("1",1,50f),Row.of("1",1,40f)));
+    }
+
+    @Test
+    public void testOnCrossJoin6() throws Exception {
+
+        // стандартный код флинка
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        final DataStream<Row> sourceStream = env.fromElements(new Object[]{"1", 50f, 200L}, new Object[]{"1", 40f, 300L}).map(Row::of);
+        final DataStream<Row> twitterStream = env.fromElements(new Object[]{"1", "Hello"}, new Object[]{"3", "Bye!"}).map(Row::of);
+
+        // апи для сидхи, который нужно реализовать
+        String queryInnerJoin = ""+
+                "define stream StockStream (symbol string, price float, volume long); " +
+                "define stream TwitterStream (companyID string, tweet string); " +
+                " " +
+                "from StockStream#window.lengthBatch(3) as S " +
+                "cross " +
+                "     join TwitterStream as T " +
+                "select S.symbol, T.tweet, S.price, S.volume " +
+                "insert into OutputStream ;";
+
+        final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
+        fEnv.registerInputStream("StockStream", sourceStream);
+        fEnv.registerInputStream("TwitterStream", twitterStream);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, queryInnerJoin);
+        // стандартный код флинка
+        final List<Row> actual = outputStream
+                .get("OutputStream")
+                //.map(row -> (Integer) row.getField(0))
+                .executeAndCollect(1);
+        assertThat(actual, containsInAnyOrder(Row.of("1","Hello",50f,200L),Row.of("1","Bye!",40f,300L)));
     }
 
 
