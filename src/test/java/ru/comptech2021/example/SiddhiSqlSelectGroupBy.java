@@ -23,10 +23,10 @@ public class SiddhiSqlSelectGroupBy {
 
         //Siddhi Application
         String siddhiApp = "" +
-                /*"define stream StockStream (symbol string, price float, volume long); " +  */
 
+                // select + group by
                /* "define stream StockStream (name string, department float, salary long); " +
-                "" + // и в третий раз: "зачем это?"
+                "" +
                 "@info(name = 'query1') " +
                 "from StockStream " +
                 "" +
@@ -34,14 +34,15 @@ public class SiddhiSqlSelectGroupBy {
                 "group by department "+
                 "insert into OutputStream;"; */
 
-
-               /* "define stream StockStream (name string, department float, salary long); " +
-                "" + // и в третий раз: "зачем это?"
+                // select
+                /* "define stream StockStream (name string, department float, salary long); " +
+                "" +
                 "@info(name = 'query1') " +
                 "from StockStream " +
                 "select department, name, salary " +
                 "insert into OutputStream;";*/
 
+                // select + group by + window
                 "define stream StockStream (name string, department float, salary long); " +
                 "" +
                 "@info(name = 'query1') " +
@@ -74,7 +75,11 @@ public class SiddhiSqlSelectGroupBy {
         inputHandler.send(new Object[]{"Tom", 7f, 100L});
         inputHandler.send(new Object[]{"Ivan", 6f, 200L});
         inputHandler.send(new Object[]{"Vasya", 5f, 30L});
-        inputHandler.send(new Object[]{"Ann", 7f, 400L});
+        inputHandler.send(new Object[]{"Ann1", 7f, 401L});
+        inputHandler.send(new Object[]{"Ann2", 7f, 402L});
+        inputHandler.send(new Object[]{"Ann3", 7f, 403L});
+        inputHandler.send(new Object[]{"Ann4", 7f, 43L});
+        inputHandler.send(new Object[]{"Ann5", 7f, 405L});
         inputHandler.send(new Object[]{"Bob", 5f, 50L});
         Thread.sleep(500);
 

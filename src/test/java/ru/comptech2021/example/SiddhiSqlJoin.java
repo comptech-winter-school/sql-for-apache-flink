@@ -18,35 +18,37 @@ public class SiddhiSqlJoin {
         //Siddhi Application
         String siddhiApp = "" +
 
-               /* "define stream StockStream (name string, department float, salary long); " +
-                "" + // и в третий раз: "зачем это?"
-                "@info(name = 'query1') " +
-                "from StockStream " +
-                "select department, name, salary " +
-                "insert into OutputStream;";*/
-
-                /*"define stream StockStream (name string, department float, salary long); " +
-                "" +
-                "@info(name = 'query1') " +
-                "from StockStream#window.lengthBatch(5) " +
-                "" +
-                "select  department, min (salary) as minSalary " +
-                "group by department "+
-                "insert into OutputStream;";*/
-
-                "define stream StockStream (symbol string, price float, volume long); " +
+                // Join
+                /*"define stream StockStream (symbol string, price float, volume long); " +
                 "define stream TwitterStream (companyID string, tweet string); " +
-                /*"define stream ThirdStream (companyID string, tweet string); " +*/
                 " " +
-                /*"from StockStream#window.time(1 min) as S " +*/
                 "from StockStream as S " +
                 "left outer " +
                 "     join TwitterStream as T " +
-                /*  "     join TwitterStream#window.time(2 min) as T " + */
                 "    on S.symbol== T.companyID " +
-               /* "join ThirdStream#window.time(20 min) as Th " +
-                "    on T.companyID== Th.companyID " +*/
-                /*"select S.symbol, T.tweet, S.price " + */
+                "select S.symbol, T.tweet, S.price " +
+                "insert into OutputStream ;";*/
+
+                // left/right join window
+               /* "define stream StockStream (symbol string, price float, volume long); " +
+                "define stream TwitterStream (companyID string, tweet string); " +
+                " " +
+                "from StockStream#window.time(1 min) as S " +
+                "left outer " +
+                // "right outer " +
+                "    join TwitterStream#window.time(2 min) as T " +
+                "    on S.symbol== T.companyID " +
+                "select S.symbol, T.tweet, S.price " +
+                "insert into OutputStream ;";*/
+
+                //  join + group by
+                "define stream StockStream (symbol string, price float, volume long); " +
+                "define stream TwitterStream (companyID string, tweet string); " +
+                " " +
+                "from StockStream#window.time(1 min) as S " +
+                "left outer " +
+                "    join TwitterStream#window.time(2 min) as T " +
+                "    on S.symbol== T.companyID " +
                 "select S.symbol as symbol, count ( T.tweet) as countTwitter " +
                 "group by symbol "+
                 "insert into OutputStream ;";
@@ -95,23 +97,6 @@ public class SiddhiSqlJoin {
         inputHandler.send(new Object[]{"00128", "ddd"});
         inputHandler.send(new Object[]{"00122", "eee"});
         Thread.sleep(500);
-
-        //Shutdown runtime
-        siddhiAppRuntime.shutdown();
-
-        /*
-        //Get InputHandler to push events into Siddhi
-        inputHandler = siddhiAppRuntime.getInputHandler("ThirdStream");
-
-        //Start processing
-        siddhiAppRuntime.start();
-
-        //Sending events to Siddhi
-        inputHandler.send(new Object[]{"00121", "aaa"});
-        inputHandler.send(new Object[]{"00123", "bbb"});
-        inputHandler.send(new Object[]{"00127", "ccc"});
-        inputHandler.send(new Object[]{"00128", "ddd"});
-        Thread.sleep(500);*/
 
         //Shutdown runtime
         siddhiAppRuntime.shutdown();
