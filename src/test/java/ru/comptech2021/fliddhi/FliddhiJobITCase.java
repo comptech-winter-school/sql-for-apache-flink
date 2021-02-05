@@ -28,33 +28,34 @@ public class FliddhiJobITCase {
 
         // стандартный код флинка
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        final DataStream<Row> sourceStream = env.fromElements(1, 2, 3, 4, 5).map(Row::of);
+        final DataStream<Row> sourceStream = env.fromElements(new Object[]{"Vasya", 5f, 30L}, new Object[]{"Vasya", 5f, 30L}).map(Row::of);
 
         // апи для сидхи, который нужно реализовать
         String query = "" +
                 "define stream StockStream (name string, department float, salary long); " +
                 "" +
                 "@info(name = 'query1') " +
-                "from StockStream#window.lengthBatch(5) " +
+                "from StockStream#window.lengthBatch(2) " +
                 "" +
-                "select  department, min (salary) as minSalary " +
+//                "from StockStream " +
+                "select department, min (salary) as minSalary " +
                 "group by department "+
                 "insert into OutputStream;";
 
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
-        fEnv.registerInputStream("SourceStream", sourceStream);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(1, query);
+        fEnv.registerInputStream("StockStream", sourceStream);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, query);
 
         // стандартный код флинка
-        final List<Integer> actual = outputStream
+        final List<Row> actual = outputStream
                 .get("OutputStream")
-                .map(row -> (Integer) row.getField(0))
-                .executeAndCollect(5);
+                //.map(row -> (Integer) row.getField(0))
+                .executeAndCollect(1);
 //        .print;
-        env.execute();
+//        env.execute();
 
 //                .executeAndCollect(5);
-        assertThat(actual, containsInAnyOrder(1,2,3,4,5));
+        assertThat(actual, contains(Row.of(5.0f, 30L)));
     }
 
     @Test
