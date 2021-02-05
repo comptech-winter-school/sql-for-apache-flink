@@ -40,7 +40,13 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
         int parallelism = env.getParallelism();
         SiddhiApp siddhiApp = SiddhiCompiler.parse(SiddhiCompiler.updateVariables(query));
 
-        namesOfOutputStreams.add(((Query) siddhiApp.getExecutionElementList().get(0)).getOutputStream().getId());
+        //namesOfOutputStreams.add(((Query) siddhiApp.getExecutionElementList().get(0)).getOutputStream().getId());
+
+        //check it
+        for(int i = 0; i < siddhiApp.getExecutionElementList().size(); i++) {
+            namesOfOutputStreams.add(((Query) siddhiApp.getExecutionElementList().get(i)).getOutputStream().getId());
+        }
+        //
 
         FliddhiKeySelector keySelector = FliddhiPlanner.createFliddhiKeySelector(siddhiApp);
         FliddhiExecutionOperator operator = new FliddhiExecutionOperator(siddhiApp, namesOfInputStreams, namesOfOutputStreams);

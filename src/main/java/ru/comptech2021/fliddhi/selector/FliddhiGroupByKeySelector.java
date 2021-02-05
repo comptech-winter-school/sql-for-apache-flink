@@ -15,11 +15,9 @@ public class FliddhiGroupByKeySelector extends FliddhiKeySelector {
     private final String nameOfInputStream;
     private final List<String> groupByAttributes = new ArrayList<>();
 
-    public FliddhiGroupByKeySelector(SiddhiApp siddhiApp) {
+    public FliddhiGroupByKeySelector(SiddhiApp siddhiApp, Query query) {
         super(siddhiApp);
         System.out.println("FliddhiGroupByKeySelector ctor");
-
-        Query query = (Query) siddhiApp.getExecutionElementList().get(0);
 
         List<Variable> groupByList = query.getSelector().getGroupByList();
         for (int i = 0; i < groupByList.size(); i++)

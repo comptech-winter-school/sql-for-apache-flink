@@ -58,12 +58,14 @@ public class FliddhiJobITCase1 {
                 "SELECT id INSERT INTO OutputStream1";
 
         String sqlGroupBy = "define stream SourceStream1 (id0 string, id1 string, id2 string); " +
-                "FROM SourceStream1 SELECT id1 group by id1 INSERT INTO OutputStream1";
+                "define stream SourceStream2 (id0 string, id1 string, id2 string); " +
+                "FROM SourceStream1 SELECT * INSERT INTO SourceStream2; " +
+                "FROM SourceStream2 SELECT id1 group by id1 INSERT INTO OutputStream1";
 
         String sqlPlain = "define stream SourceStream1 (id0 string, id1 string, id2 string); " +
                 "FROM SourceStream1 SELECT id1 INSERT INTO OutputStream1";
 
-        SiddhiApp siddhiApp = SiddhiCompiler.parse(sqlJoin);
+        SiddhiApp siddhiApp = SiddhiCompiler.parse(sqlGroupBy);
 
 
         KeySelector<FlinkRecord, String> keySelector = FliddhiPlanner.createFliddhiKeySelector(siddhiApp);

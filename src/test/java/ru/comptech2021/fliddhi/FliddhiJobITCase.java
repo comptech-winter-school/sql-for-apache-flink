@@ -106,8 +106,10 @@ public class FliddhiJobITCase {
 
         String query = "" +
                 "define stream SourceStream (symbol string, price float, volume long); " +
+                "define stream SourceStream1 (symbol string, price float, volume long); " +
                 "" +
-                "from SourceStream[volume < 150] " +
+                "from SourceStream select * insert into SourceStream1; " +
+                "from SourceStream1[volume < 150] " +
                 "select symbol, sum(price) as sumPrice group by symbol " +
                 "insert into OutputStream;";
 
