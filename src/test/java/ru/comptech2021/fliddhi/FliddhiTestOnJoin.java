@@ -196,7 +196,9 @@ public class FliddhiTestOnJoin {
                 " " +
                 "from StockStream#window.lengthBatch(3) as S " +
                 "cross " +
+//                "full outer " +
                 "     join TwitterStream as T " +
+                "    on S.symbol== T.companyID " +
                 "select S.symbol, T.tweet, S.price, S.volume " +
                 "insert into OutputStream ;";
 
@@ -209,7 +211,8 @@ public class FliddhiTestOnJoin {
                 .get("OutputStream")
                 //.map(row -> (Integer) row.getField(0))
                 .executeAndCollect(1);
-        assertThat(actual, containsInAnyOrder(Row.of("1","Hello",50f,200L),Row.of("1","Bye!",40f,300L)));
+        assertThat(actual, containsInAnyOrder(Row.of("1","Hello",50f,200L),Row.of("1","Bye!",40f,300L),Row.of("1","Bye!",50f,200L),Row.of("1","Hello",40f,300L)));
+//        assertThat(actual, containsInAnyOrder(Row.of("1","Hello",50f,200L),Row.of("1","Hello",40f,300L)));
     }
 
 
