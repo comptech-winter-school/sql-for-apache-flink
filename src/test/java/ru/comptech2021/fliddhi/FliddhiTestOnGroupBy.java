@@ -1,50 +1,44 @@
 package ru.comptech2021.fliddhi;
 
 
-import io.siddhi.core.SiddhiManager;
-import io.siddhi.core.event.Event;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.types.Row;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 import ru.comptech2021.fliddhi.environment.FliddhiExecutionEnvironment;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
-public class FliddhiJobITCase {
+public class FliddhiTestOnGroupBy {
 
-
+    // select + group by + window
     @Test
-    public void jobShouldTransferIntegersFromSourceToOutStream() throws Exception {
+    public void testOnGB1() throws Exception {
 
         // стандартный код флинка
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        final DataStream<Row> sourceStream = env.fromElements(new Object[]{"Vasya", 5f, 30L}, new Object[]{"Vasya", 5f, 30L}).map(Row::of);
+        final DataStream<Row> sourceStream = env.fromElements(new Object[]{"Vasya", 5f, 20L}, new Object[]{"Lena", 5f, 30L}).map(Row::of);
 
         // апи для сидхи, который нужно реализовать
-        String query = "" +
+        String querySelectGBWindow = "" +
                 "define stream StockStream (name string, department float, salary long); " +
                 "" +
                 "@info(name = 'query1') " +
                 "from StockStream#window.lengthBatch(2) " +
                 "" +
-//                "from StockStream " +
                 "select department, min (salary) as minSalary " +
                 "group by department "+
                 "insert into OutputStream;";
 
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
         fEnv.registerInputStream("StockStream", sourceStream);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, query);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, querySelectGBWindow);
 
         // стандартный код флинка
         final List<Row> actual = outputStream
@@ -55,11 +49,70 @@ public class FliddhiJobITCase {
 //        env.execute();
 
 //                .executeAndCollect(5);
-        assertThat(actual, contains(Row.of(5.0f, 30L)));
+        assertThat(actual, contains(Row.of(5f, 20L)));
     }
-
+    // select
     @Test
-    public void test2() throws Exception {
+    public void testOnSelect1() throws Exception{
+
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        final DataStream<Row> sourceStream = env.fromElements(new Object[]{"Vasya", 5f, 50L}, new Object[]{"Lena", 5f, 30L}).map(Row::of);
+
+        // апи для сидхи, который нужно реализовать
+        String querySelect = "" +
+                "define stream StockStream (name string, department float, salary long); " +
+                "" +
+                "@info(name = 'query1') " +
+                "from StockStream " +
+                "select department, name, salary " +
+                "insert into OutputStream;";
+
+        final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
+        fEnv.registerInputStream("StockStream", sourceStream);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(1, querySelect);
+
+
+        // стандартный код флинка
+        final List<Row> actual = outputStream
+                .get("OutputStream")
+                //.map(row -> (Integer) row.getField(0))
+                .executeAndCollect(3);
+        assertThat(actual, containsInAnyOrder(Row.of(5f,"Vasya", 50L), Row.of(5f,"Lena", 30L)));
+    }
+    // select + group by
+    @Test
+    public void testOnGB2() throws Exception{
+
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+        final DataStream<Row> sourceStream = env.fromElements(new Object[]{"Vasya", 5f, 50L}, new Object[]{"Lena", 5f, 30L}).map(Row::of);
+
+        // апи для сидхи, который нужно реализовать
+        String querySelectGB = "" +
+                "define stream StockStream (name string, department float, salary long); " +
+                "" +
+                "@info(name = 'query1') " +
+                "from StockStream " +
+                "" +
+                "select  department, min (salary) as minsalary " +
+                "group by department "+
+                "insert into OutputStream;";
+
+        final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
+        fEnv.registerInputStream("StockStream", sourceStream);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, querySelectGB);
+
+
+        // стандартный код флинка
+        final List<Row> actual = outputStream
+                .get("OutputStream")
+                //.map(row -> (Integer) row.getField(0))
+                .executeAndCollect(4);
+        System.out.println(actual);
+        assertThat(actual, containsInAnyOrder(Row.of(5f, 50L), Row.of(5f, 30L)));
+    }
+    @Test
+    public void testOnSelect2() throws Exception {
         Object[] elements = {
                 new Object[]{"IBM", 700f, 100L},
                 new Object[]{"IBM", 700f, 100L},
@@ -129,4 +182,5 @@ public class FliddhiJobITCase {
 
         env.execute();
     }
+
 }

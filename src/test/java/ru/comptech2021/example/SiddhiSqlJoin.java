@@ -23,7 +23,7 @@ public class SiddhiSqlJoin {
                 "define stream TwitterStream (companyID string, tweet string); " +
                 " " +
                 "from StockStream as S " +
-                "left outer " +
+                "left outer " +//без аутер джоин, без аутер и он, все вместе
                 "     join TwitterStream as T " +
                 "    on S.symbol== T.companyID " +
                 "select S.symbol, T.tweet, S.price " +
