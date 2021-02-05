@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.types.Row;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 import ru.comptech2021.fliddhi.environment.FliddhiExecutionEnvironment;
 
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.*;
 
 public class FliddhiJobITCase {
 
@@ -31,24 +32,29 @@ public class FliddhiJobITCase {
 
         // апи для сидхи, который нужно реализовать
         String query = "" +
-                "define stream SourceStream (number int); " +
-                "define stream OutputStream (number int); " +
+                "define stream StockStream (name string, department float, salary long); " +
                 "" +
-                "FROM SourceStream SELECT number INSERT INTO OutputStream";
+                "@info(name = 'query1') " +
+                "from StockStream#window.lengthBatch(5) " +
+                "" +
+                "select  department, min (salary) as minSalary " +
+                "group by department "+
+                "insert into OutputStream;";
 
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
         fEnv.registerInputStream("SourceStream", sourceStream);
         final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(1, query);
 
         // стандартный код флинка
-        final DataStreamSink<Integer> actual = outputStream
+        final List<Integer> actual = outputStream
                 .get("OutputStream")
                 .map(row -> (Integer) row.getField(0))
-                .print();
+                .executeAndCollect(5);
+//        .print;
         env.execute();
 
 //                .executeAndCollect(5);
-//        assertThat(actual, containsInAnyOrder(1, 2, 3, 4, 5));
+        assertThat(actual, containsInAnyOrder(1,2,3,4,5));
     }
 
     @Test
