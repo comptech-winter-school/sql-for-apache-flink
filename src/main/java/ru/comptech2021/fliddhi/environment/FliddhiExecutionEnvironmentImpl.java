@@ -36,16 +36,21 @@ class FliddhiExecutionEnvironmentImpl implements FliddhiExecutionEnvironment {
     }
 
     @Override
-    public Map<String, DataStream<Row>> siddhiQL(int parallelism, String query) {
+    public Map<String, DataStream<Row>> siddhiQL(String query) {
+        int parallelism = env.getParallelism();
         SiddhiApp siddhiApp = SiddhiCompiler.parse(SiddhiCompiler.updateVariables(query));
 
         namesOfOutputStreams.add(((Query) siddhiApp.getExecutionElementList().get(0)).getOutputStream().getId());
 
-        FliddhiKeySelector keySelector = FliddhiPlanner.createFliddhiKeySelector(parallelism, siddhiApp);
+        FliddhiKeySelector keySelector = FliddhiPlanner.createFliddhiKeySelector(siddhiApp);
         FliddhiExecutionOperator operator = new FliddhiExecutionOperator(siddhiApp, namesOfInputStreams, namesOfOutputStreams);
 
         DataStream<FlinkRecord> streams = unionStreams();
-        DataStream<FlinkRecord> resultStream = streams.keyBy(keySelector).transform("Siddhi Query", TypeInformation.of(FlinkRecord.class), operator);
+
+        if (parallelism != 1){
+            streams = streams.keyBy(keySelector);
+        }
+        DataStream<FlinkRecord> resultStream = streams.transform("Siddhi Query", TypeInformation.of(FlinkRecord.class), operator);
 
         return outputRecordRouting(resultStream);
     }

@@ -66,7 +66,7 @@ public class FliddhiJobITCase1 {
         SiddhiApp siddhiApp = SiddhiCompiler.parse(sqlJoin);
 
 
-        KeySelector<FlinkRecord, String> keySelector = FliddhiPlanner.createFliddhiKeySelector(1, siddhiApp);
+        KeySelector<FlinkRecord, String> keySelector = FliddhiPlanner.createFliddhiKeySelector(siddhiApp);
         KeyedStream<FlinkRecord, String> keyedStream = streamMap.get("sourceStream1").keyBy(keySelector);
 
         System.out.println("print result stream");

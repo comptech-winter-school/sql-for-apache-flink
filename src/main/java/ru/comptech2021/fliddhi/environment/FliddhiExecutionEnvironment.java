@@ -29,7 +29,7 @@ public interface FliddhiExecutionEnvironment {
      * @throws NullPointerException if any parameters are null
      * @return output stream
      */
-    Map<String, DataStream<Row>> siddhiQL(int parallelism, String query);
+    Map<String, DataStream<Row>> siddhiQL(String query);
 
     void registerInputStream(String nameOfStream, DataStream<Row> dataStream);
 }

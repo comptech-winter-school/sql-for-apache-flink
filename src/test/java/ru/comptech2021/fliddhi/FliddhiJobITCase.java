@@ -38,7 +38,7 @@ public class FliddhiJobITCase {
 
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
         fEnv.registerInputStream("SourceStream", sourceStream);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(1, query);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(query);
 
         // стандартный код флинка
         final DataStreamSink<Integer> actual = outputStream
@@ -113,7 +113,7 @@ public class FliddhiJobITCase {
 
         final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
         fEnv.registerInputStream("SourceStream", sourceStream1);
-        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, query);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(query);
 
         // стандартный код флинка
         final DataStreamSink<Row> actual = outputStream
