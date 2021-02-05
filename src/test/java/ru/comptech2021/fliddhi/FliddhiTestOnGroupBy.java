@@ -44,7 +44,7 @@ public class FliddhiTestOnGroupBy {
         final List<Row> actual = outputStream
                 .get("OutputStream")
                 //.map(row -> (Integer) row.getField(0))
-                .executeAndCollect(1);
+                .executeAndCollect(2);
 //        .print;
 //        env.execute();
 
@@ -110,6 +110,40 @@ public class FliddhiTestOnGroupBy {
                 .executeAndCollect(4);
         System.out.println(actual);
         assertThat(actual, containsInAnyOrder(Row.of(5f, 50L), Row.of(5f, 30L)));
+    }
+
+    @Test
+    public void testOnGB3() throws Exception{
+
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+        final DataStream<Row> sourceStream = env.fromElements(new Object[]{"physics", 4f, 5L}, new Object[]{"math", 6f, 4L},
+                new Object[]{"drawing", 7f, 3L},new Object[]{"drawing", 7f, 5L},new Object[]{"math", 6f, 4L},
+                new Object[]{"physics", 4f, 3L}).map(Row::of);
+
+        // апи для сидхи, который нужно реализовать
+        String querySelectGB = "" +
+                "define stream StockStream (name string, number float, grade long); " +
+                "" +
+                "@info(name = 'query1') " +
+                "from StockStream#window.lengthBatch(27) " +
+                "" +
+                "select  name, number, avg (grade) as avgGrade " +
+                "group by number, name "+
+                "insert into OutputStream; ";
+
+        final FliddhiExecutionEnvironment fEnv = FliddhiExecutionEnvironment.getExecutionEnvironment(env);
+        fEnv.registerInputStream("StockStream", sourceStream);
+        final Map<String, DataStream<Row>> outputStream = fEnv.siddhiQL(2, querySelectGB);
+
+
+        // стандартный код флинка
+        final List<Row> actual = outputStream
+                .get("OutputStream")
+                //.map(row -> (Integer) row.getField(0))
+                .executeAndCollect(4);
+        System.out.println(actual);
+        assertThat(actual, containsInAnyOrder(Row.of("physics",4f, 4L), Row.of("math",6f, 4L),Row.of("drawing", 7f, 4L)));
     }
     @Test
     public void testOnSelect2() throws Exception {
