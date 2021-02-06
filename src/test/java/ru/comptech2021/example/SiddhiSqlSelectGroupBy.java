@@ -7,8 +7,7 @@ import io.siddhi.core.stream.input.InputHandler;
 import io.siddhi.core.stream.output.StreamCallback;
 
 import java.util.Arrays;
-
-
+import java.util.List;
 
 
 /**
@@ -25,16 +24,16 @@ public class SiddhiSqlSelectGroupBy {
         String siddhiApp = "" +
 
                 // select + group by
-               /* "define stream StockStream (name string, department float, salary long); " +
+                "define stream StockStream (name string, department float, salary long); " +
                 "" +
                 "@info(name = 'query1') " +
                 "from StockStream " +
                 "" +
                 "select  department, min (salary) as minsalary " +
-                "group by department "+
-                "insert into OutputStream;"; */
+                "group by department " +
+                "insert into OutputStream;";
 
-                // select
+        // select
                 /* "define stream StockStream (name string, department float, salary long); " +
                 "" +
                 "@info(name = 'query1') " +
@@ -42,15 +41,15 @@ public class SiddhiSqlSelectGroupBy {
                 "select department, name, salary " +
                 "insert into OutputStream;";*/
 
-                // select + group by + window
-                "define stream StockStream (name string, department float, salary long); " +
+        // select + group by + window
+                /* "define stream StockStream (name string, department float, salary long); " +
                 "" +
                 "@info(name = 'query1') " +
                 "from StockStream#window.lengthBatch(5) " +
                 "" +
                 "select  department, min (salary) as minSalary " +
                 "group by department "+
-                "insert into OutputStream;";
+                "insert into OutputStream;"; */
 
         //Generate runtime
         SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(siddhiApp);
@@ -72,6 +71,16 @@ public class SiddhiSqlSelectGroupBy {
         siddhiAppRuntime.start();
 
         //Sending events to Siddhi
+
+        List<Object[]> objs = Arrays.asList(new Object[]{"Vasya", 5f, 50L}, new Object[]{"Lena", 5f, 30L});
+        objs.forEach(obj -> {
+            try {
+                inputHandler.send(obj);
+            } catch (InterruptedException ex) {
+            }
+        });
+
+        /*
         inputHandler.send(new Object[]{"Tom", 7f, 100L});
         inputHandler.send(new Object[]{"Ivan", 6f, 200L});
         inputHandler.send(new Object[]{"Vasya", 5f, 30L});
@@ -81,6 +90,8 @@ public class SiddhiSqlSelectGroupBy {
         inputHandler.send(new Object[]{"Ann4", 7f, 43L});
         inputHandler.send(new Object[]{"Ann5", 7f, 405L});
         inputHandler.send(new Object[]{"Bob", 5f, 50L});
+
+         */
         Thread.sleep(500);
 
         //Shutdown runtime
