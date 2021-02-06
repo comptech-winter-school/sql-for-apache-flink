@@ -37,6 +37,7 @@ public class FlinkSqlExample {
                 "WHERE s.player <> 'Sasha'";
         final Table table = tEnv.sqlQuery(sqlQuery);
         tEnv.toAppendStream(table, Row.class).print();
+        System.out.println(env.getExecutionPlan());
         env.execute();
     }
 }

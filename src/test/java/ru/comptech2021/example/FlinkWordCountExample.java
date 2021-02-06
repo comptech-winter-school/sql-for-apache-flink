@@ -24,6 +24,7 @@ public class FlinkWordCountExample {
 
         dataStream.print();
 
+        System.out.println(env.getExecutionPlan());
         env.execute("Window WordCount");
     }
 
