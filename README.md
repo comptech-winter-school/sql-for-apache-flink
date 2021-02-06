@@ -1,11 +1,11 @@
 # "Добавление поддержки SQL-подобного языка для потоковой обработки данных в Apache Flink"
 В рамках нашего проекта мы осуществили интеграцию инструментов для потоковой обработки данных Siddhi и Apache Flink. Наше решение позволяет использовать возможности Apache Flink с наименьшим количеством правок в коде для Siddhi.
 
-## Реализованные операторы
+### Реализованные операторы
 * *JOIN*
 * *GROUP BY*
 
-## Пример работы
+## Пример использования
 ```
 // Инициализация DataStream<Row> на которых будет выполняться запрос
    DataStream<Row> sourceStream = env.fromElements(new Object[]{"Vasya", 5f, 50L}, new Object[]{"Lena", 5f, 30L}).map(Row::of);
@@ -33,9 +33,9 @@
 https://docs.google.com/document/d/1JTnql3-7uOlBwvzu6ZkPxqVtpWKOAwVTsAv0NfaAbcs/
 
 Наша команда:
-Безверхова Ольга	*(Technical Writer)*	@brookoli
-Губаренко Антонина	*(Tester)*	@a-gubarenko
-Зозуля Артём	*(Developer)*	@Br0adSky
-Обухова Алиса	*(Teamleader, Developer)*	@lbdlbdlbdl
-Попов Дмитрий	*(Developer)*	@Popov-Dmitry
-Трушев Александр	*(Supervisor)*	@trushev
++ Безверхова Ольга	*(Technical Writer)*	@brookoli
++ Губаренко Антонина	*(Tester)*	@a-gubarenko
++ Зозуля Артём	*(Developer)*	@Br0adSky
++ Обухова Алиса	*(Teamleader, Developer)*	@lbdlbdlbdl
++ Попов Дмитрий	*(Developer)*	@Popov-Dmitry
++ Трушев Александр	*(Supervisor)*	@trushev
