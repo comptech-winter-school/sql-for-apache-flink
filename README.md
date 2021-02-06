@@ -37,9 +37,9 @@
 https://docs.google.com/document/d/1JTnql3-7uOlBwvzu6ZkPxqVtpWKOAwVTsAv0NfaAbcs/
 
 Наша команда:
-+ Безверхова Ольга	*(Technical Writer)*	@brookoli
-+ Губаренко Антонина	*(Tester)*	@a-gubarenko
-+ Зозуля Артём	*(Developer)*	@Br0adSky
-+ Обухова Алиса	*(Teamleader, Developer)*	@lbdlbdlbdl
-+ Попов Дмитрий	*(Developer)*	@Popov-Dmitry
-+ Трушев Александр	*(Supervisor)*	@trushev
++ Безверхова Ольга	*(Technical Writer)*	[@brookoli](https://github.com/brookoli)
++ Губаренко Антонина	*(Tester)*	[@a-gubarenko](https://github.com/a-gubarenko)
++ Зозуля Артём	*(Developer)*	[@Br0adSky](https://github.com/Br0adSky)
++ Обухова Алиса	*(Teamleader, Developer)*	[@lbdlbdlbdl](https://github.com/lbdlbdlbdl)
++ Попов Дмитрий	*(Developer)*	[@Popov-Dmitry](https://github.com/Popov-Dmitry)
++ Трушев Александр	*(Supervisor)*	[@trushev](https://github.com/trushev)
